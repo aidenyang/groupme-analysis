@@ -1,0 +1,69 @@
+<div class="row">
+<h4>
+<a href="#/home">Back to All Groups</a>
+</h4>
+</div>
+
+<div class="row">
+	<h1>{{group.name}}</h1>
+</div>
+<div class="row">
+	<h3 class="clickable" ng-click="membersShow = !membersShow">Members </h3>
+	<hr>
+	<div ng-init="membersShow = false"  ng-show="membersShow">
+		<div ng-repeat="member in members" class="col-sm-6 ol-md-6 col-lg-6 groupgrid">
+			<div class="caption">
+				<h4>{{member.nickname}}</h4>
+			</div>
+			<div class="thumbnail memberpic">
+				<img ng-src="{{member.image_url}}">
+			</div>
+		</div>
+	</div>
+
+</div>
+<div class="row">
+	<h3 class="clickable" ng-click="statsShow = !statsShow">Statistics</h3>
+	<hr>
+	<div ng-init="statsShow = false" ng-show="statsShow" class="panel panel-default">
+		<div class="panel-body">
+			<h5>Total messages sent: </h5><span>{{msgcount}}</span>
+			<h5>Members on Mute: </h5><span>{{pctMuted}}%</span>
+			<h5>Muted Members: </h5>
+			<ul>
+				<li ng-repeat="member in muted">
+					{{member}}
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<h3 class="clickable" ng-click="lbShow = !lbShow">Leaderboard</h3>
+	<hr>
+	<div ng-show="lbShow" ng-init="lbShow = false">
+		<span ng-class="{'leaderboard': !isActive1, 'leaderboard active': isActive1}"
+		ng-click="toggleLb(1); processLeaderboard(id, 'day')">Day</span>
+		<span ng-class="{'leaderboard': !isActive2, 'leaderboard active': isActive2}"
+		ng-click="toggleLb(2); processLeaderboard(id, 'week')">Week</span>
+		<span ng-class="{'leaderboard': !isActive3, 'leaderboard active': isActive3}"
+		ng-click="toggleLb(3); processLeaderboard(id, 'month')">Month</span>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<h3 ng-init="noMessages = false" ng-show="noMessages">
+					There are no messages to show.
+				</h3>
+				<ol>
+					<div ng-repeat="message in leaderboard">
+						<li class="lbitem">
+							{{message.name}}: {{message.text}} ( {{message.favorited_by.length}} <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> )
+						</li> 
+						<div ng-if="message.attachments.length > 0"> 
+							<img class="lbpic" ng-repeat="image in message.attachments" ng-src="{{image.url}}">
+						</div>
+					</div>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
