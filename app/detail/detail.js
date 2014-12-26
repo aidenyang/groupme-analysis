@@ -9,13 +9,13 @@ angular.module('myApp.detail', ['ngRoute'])
 	});
 }])
 
-.controller('DetailCtrl', ['$scope', '$routeParams', 'GroupService', 'MessageService', 'LeaderboardService', function($scope, $routeParams, GroupService, MessageService, LeaderboardService) {
+.controller('DetailCtrl', ['$scope', '$location', '$routeParams', 'GroupService', 'MessageService', 'LeaderboardService', 'MemberService', function($scope, $location, $routeParams, GroupService, MessageService, LeaderboardService, MemberService) {
 
 	// setup details
 	$scope.id = $routeParams.id;
 	$scope.groups = GroupService.getGroups();
 	$scope.muted = [];
-
+	$scope.messages = [];
 	// in case user gets to this link without going to the homepage first; must load groups 
 	GroupService.fetchGroups().then(function(result) {
 		$scope.groups = result;
@@ -32,9 +32,11 @@ angular.module('myApp.detail', ['ngRoute'])
 			$scope.group = group[0];
 			console.log($scope.group);
 			$scope.members = $scope.group.members;
+			console.log($scope.members);
 			calcStats();
 			$scope.processLeaderboard($scope.id, "day");
 			processMessages();
+			console.log($scope.messages);
 		}
 	}
 
@@ -58,22 +60,30 @@ angular.module('myApp.detail', ['ngRoute'])
 		return percentage;
 	}
 
+	$scope.generateMemberPage = function(id) {
+		console.log($scope.messages);
+		console.log(id);
+		var matches = _.where($scope.messages, {
+			sender_id: id});
+		console.log("Matches follow:");
+		console.log(matches);
+		MemberService.setMessages(matches);
+		$location.path('/member/' + id)
+	}
+
 	var processMessages = function() {
 		var pages = Math.ceil($scope.msgcount/100);
-		var messages = [];
 		var after_id = null;
 		for (var i = 0; i < pages; i++) {
 			MessageService.fetchMessages($scope.id, after_id).then(function(result) {
-				var msgpg = result.messages;
-				messages.concat(msgpg);
+				var msgpg = result.data.response.messages;
+				$scope.messages = $scope.messages.concat(msgpg);
 				after_id = _.last(msgpg).id;
 			});
 		}
-		$scope.messages = messages;
 	}
 
 	$scope.processLeaderboard = function(groupid, period) {
-		console.log(period);
 		LeaderboardService.fetchLeaderboard(groupid, period).then(function(result) {
 			$scope.leaderboard = result.data.response.messages;
 			if ($scope.leaderboard.length == 0) {

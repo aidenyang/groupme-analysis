@@ -9,6 +9,7 @@ angular.module('myApp.member', ['ngRoute'])
 	});
 }])
 
-.controller('MemberCtrl', ['$scope', '$routeParams', 'GroupService', 'MessageService', 'LeaderboardService', function($scope, $routeParams, GroupService, MessageService, LeaderboardService) {
-
+.controller('MemberCtrl', ['$scope', '$routeParams', 'MemberService', function($scope, $routeParams, MemberService) {
+	$scope.messages = MemberService.getMessages();
+	console.log($scope.messages);
 }]);

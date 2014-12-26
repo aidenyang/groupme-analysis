@@ -12,7 +12,7 @@
 	<hr>
 	<div ng-init="membersShow = false"  ng-show="membersShow">
 		<div ng-repeat="member in members" class="col-sm-6 ol-md-6 col-lg-6 groupgrid">
-			<div class="caption">
+			<div ng-click="generateMemberPage(member.user_id)" class="caption clickable">
 				<h4>{{member.nickname}}</h4>
 			</div>
 			<div class="thumbnail memberpic">

@@ -37,13 +37,24 @@ angular.module('myApp.groupme', [])
 .factory('MessageService', function($http) {
 	return {
 		fetchMessages: function(groupid, after_id) {
-			return $http({
-				method: 'GET',
-				url: 'https://api.groupme.com/v3/groups/' + groupid + '/messages?after_id=' + after_id + '&token=0716afb06ea301327f545a881ffffb1c',
-				dataType: 'jsonp'
-			}).then(function(result) {
-				return result;
-			});
+			if (after_id != null) {
+				return $http({
+					method: 'GET',
+					url: 'https://api.groupme.com/v3/groups/' + groupid + '/messages?limit=100&after_id=' + after_id + '&token=0716afb06ea301327f545a881ffffb1c',
+					dataType: 'jsonp'
+				}).then(function(result) {
+					return result;
+				});
+			}
+			else {
+				return $http({
+					method: 'GET',
+					url: 'https://api.groupme.com/v3/groups/' + groupid + '/messages?token=0716afb06ea301327f545a881ffffb1c',
+					dataType: 'jsonp'
+				}).then(function(result) {
+					return result;
+				});
+			}
 		}
 	}
 })
@@ -58,6 +69,18 @@ angular.module('myApp.groupme', [])
 			}).then(function(result) {
 				return result;
 			});
+		}
+	}
+})
+
+.factory('MemberService', function() {
+	var messages = [];
+	return {
+		setMessages: function(msg) {
+			messages = msg; 
+		},
+		getMessages: function() {
+			return messages;
 		}
 	}
 });

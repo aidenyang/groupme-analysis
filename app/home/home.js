@@ -15,7 +15,6 @@ angular.module('myApp.home', ['ngRoute'])
 	});
 
 	$scope.go = function (id) {
-		console.log('/#detail/' + id);
 		$location.path('/detail/' + id);
 	};
 }]);
