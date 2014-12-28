@@ -4,6 +4,9 @@
   padding-bottom: 15px;
 }
 
+body {
+  padding: 50px;
+}
 .thumbnail {
   overflow: hidden;
   max-height: 400px;
@@ -34,7 +37,7 @@
 }
 
 .lbpic {
-  max-height: 400px;
+  max-width: 50%;
   display: block;
 }
 
@@ -59,4 +62,15 @@ ul {
 
 a:hover {
   color: #1a1a92;
+}
+
+.loader {
+  width: 200px;
+  vertical-align: middle;
+  display: block;
+}
+
+.login {
+  padding: 20px;
+  margin: 30px;
 }

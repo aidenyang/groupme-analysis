@@ -9,9 +9,11 @@ angular.module('myApp.detail', ['ngRoute'])
 	});
 }])
 
-.controller('DetailCtrl', ['$scope', '$location', '$routeParams', 'GroupService', 'MessageService', 'LeaderboardService', 'MemberService', function($scope, $location, $routeParams, GroupService, MessageService, LeaderboardService, MemberService) {
-
+.controller('DetailCtrl', ['$scope', '$location', '$routeParams', 'GroupService', 'MessageService', 'LeaderboardService', 'MemberService', 'AuthService', function($scope, $location, $routeParams, GroupService, MessageService, LeaderboardService, MemberService, AuthService) {
+	
+	$scope.token = AuthService.getToken();
 	// setup details
+	$scope.isLoading = true;
 	$scope.id = $routeParams.id;
 	$scope.groups = GroupService.getGroups();
 	$scope.muted = [];
@@ -30,26 +32,25 @@ angular.module('myApp.detail', ['ngRoute'])
 		}
 		else if (group.length > 0) {
 			$scope.group = group[0];
-			console.log($scope.group);
 			$scope.members = $scope.group.members;
 			console.log($scope.members);
+			MemberService.setMembers($scope.members);
 			calcStats();
 			$scope.processLeaderboard($scope.id, "day");
 			processMessages();
-			console.log($scope.messages);
 		}
 	}
 
 	var calcStats = function() {
 		$scope.img = $scope.group.image_url;
 		$scope.msgcount = $scope.group.messages.count;
+		$scope.pages = Math.ceil($scope.msgcount/100);
 		$scope.pctMuted = calcMuted();
 	}
 
 	var calcMuted = function() {
 		var muted = 0;
 		var total = $scope.members.length;
-		console.log($scope.members);
 		for (var i = 0; i < $scope.members.length; i++) {
 			if ($scope.members[i].muted) {
 				muted++;
@@ -61,30 +62,37 @@ angular.module('myApp.detail', ['ngRoute'])
 	}
 
 	$scope.generateMemberPage = function(id) {
-		console.log($scope.messages);
-		console.log(id);
+		// this is not working
 		var matches = _.where($scope.messages, {
 			sender_id: id});
-		console.log("Matches follow:");
-		console.log(matches);
+		var member = _.where($scope.members, {
+			user_id: id});
+		MemberService.setMember(member);
 		MemberService.setMessages(matches);
-		$location.path('/member/' + id)
+		$location.path('/member/' + id + '/' + $scope.id)
 	}
 
-	var processMessages = function() {
-		var pages = Math.ceil($scope.msgcount/100);
-		var after_id = null;
-		for (var i = 0; i < pages; i++) {
-			MessageService.fetchMessages($scope.id, after_id).then(function(result) {
+	var processMessages = function(before_id) {
+		var count = 0;
+		MessageService.fetchMessages($scope.id, before_id).then(
+			function(result) {
 				var msgpg = result.data.response.messages;
 				$scope.messages = $scope.messages.concat(msgpg);
-				after_id = _.last(msgpg).id;
+				if($scope.messages.length == $scope.msgcount) {
+					$scope.isLoading = false;
+				}
+				before_id = _.last(msgpg).id;
+				processMessages(before_id);
 			});
-		}
 	}
+
+
+
+	// functions that need to be exposed on scope
 
 	$scope.processLeaderboard = function(groupid, period) {
 		LeaderboardService.fetchLeaderboard(groupid, period).then(function(result) {
+			$scope.noMessages = false;
 			$scope.leaderboard = result.data.response.messages;
 			if ($scope.leaderboard.length == 0) {
 				$scope.noMessages = true;
@@ -93,13 +101,12 @@ angular.module('myApp.detail', ['ngRoute'])
 	}
 
 	// UI Logic
-
 	$scope.isActive1 = true;
 	$scope.isActive2 = false;
 	$scope.isActive3 = false;
 
 	$scope.toggleLb = function(index) {
-		console.log(index);
+		
 		switch(index) {
 			case 1: 
 			$scope.isActive1 = true;

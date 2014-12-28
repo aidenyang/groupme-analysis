@@ -1,6 +1,8 @@
 <h1 class="text-center">GroupMe Analysis</h1>
-
-<div class="row">
+<div ng-hide="loggedIn" class="row text-center">
+	<a href="https://oauth.groupme.com/oauth/authorize?client_id=inBYOayl8JMWGFBjyXk9CElydXXvUuSA4JT6rZRPjsHQLk6P"><button type="button" class="btn btn-primary btn-lg login">Log Into GroupMe</button></a>
+</div>
+<div ng-show="loggedIn" class="row">
 	<div ng-repeat="group in groups" class="col-sm-6 ol-md-4 col-lg-3 groupgrid">
 		<div class="clickable" ng-click="go(group.id)" class="caption">
 			<h3>{{group.name}}</h3>

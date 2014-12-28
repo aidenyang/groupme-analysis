@@ -1,1 +1,59 @@
-sup
+<div class="row">
+	<h4>
+		<a ng-href="#/detail/{{groupid}}">Back to Group Detail</a>
+	</h4>
+</div>
+<div class="row">
+	<h3>{{member.nickname}}</h3>
+</div>
+<h3 class="clickable" ng-click="statsShow = !statsShow">Statistics</h3>
+<div ng-init="statsShow = true" ng-show="statsShow" class="panel panel-default">
+	<div ng-hide="hasComments">
+		<p>
+			{{member.nickname}} has not commented in this group. There is no data to show. 
+		</p>
+	</div>
+	<div ng-show="hasComments" class="panel-body">
+		<h5>Total Comments:</h5>
+		<p>
+			{{totalComments}}
+		</p>
+		<h5>Top Comment:</h5>
+		<span>Sent {{convertDate(topComment.created_at)}} ( {{topComment.favorited_by.length}} <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> )</span>
+		<p ng-if="topComment.text !=null">{{topComment.text}}</p>
+		<div ng-if="topComment.attachments.length > 0"> 
+			<img class="lbpic" ng-repeat="image in topComment.attachments" ng-src="{{image.url}}">
+		</div>
+		<p>Favorited by:
+			<ul>
+				<li ng-repeat="id in topComment.favorited_by">
+					{{asNickname(id)}}
+				</li>
+			</ul> 
+		</p>
+	</div>
+</div>
+<h3 class="clickable" ng-click="freqShow = !freqShow">
+	Most Frequently Used Words
+</h3>
+<div ng-init="freqShow = true" ng-show="freqShow" class="panel panel-default">
+	<div ng-hide="hasComments">
+		<p>
+			{{member.nickname}} has not commented in this group. There is no data to show. 
+		</p>
+	</div>
+	<div ng-show="hasComments" class="panel-body">
+		<h4>Show Top 
+			<span>
+				<input type="text" ng-model="freqLimit" size="5">
+				Most Frequent Words</span>
+			</h4>
+			<br>
+			<ol>
+				<li ng-repeat="word in freq | limitTo: freqLimit">
+				<b>{{word[0]}}</b> : {{word.length}}
+				</li>
+			</ol>
+		</div>
+	</div>
+
